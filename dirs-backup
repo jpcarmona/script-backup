@@ -1,0 +1,6 @@
+# Ficheros de configuración
+/etc
+# Datos personales
+/home
+# Base de datos postgres
+/var/lib/postgresql
