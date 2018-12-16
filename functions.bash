@@ -7,7 +7,7 @@
 function COMPROBAR_ROOT
 {
   
-USER_BAKCUP=`whoami`
+USER_BACKUP=`whoami`
 
 if [ "$USER_BACKUP" != "root" ]
 then
