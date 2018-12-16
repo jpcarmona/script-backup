@@ -94,8 +94,8 @@ echo "BACKUP-INC_REMOTE"
 
 
 # DEJAR POR SI ACASO
-ls -w 1 -t /etc/ | head -1
-
-
-linea=$(grep "completa=" ola)
-sed -ri "s/$linea/completa=alli/g" config
+#ls -w 1 -t /etc/ | head -1
+#
+#
+#linea=$(grep "completa=" ola)
+#sed -ri "s/$linea/completa=alli/g" config
