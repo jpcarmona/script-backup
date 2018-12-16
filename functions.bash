@@ -125,9 +125,9 @@ EXC_DIRS_BACKUP=$(cat $DIR_BASE/exc-dirs-backup-local | grep -v "#" | tr -t "\n"
 # Realizamos backup completo de $dirs-backup-local
 if [ -z $EXC_DIRS_BACKUP ]
 then
-  tar -czpf $DIR_BASE/backups-local/full_$FECHA.tar.gz -g $DIR_BASE/snaps-local/full_$FECHA.snaps $DIRS_BACKUP
+  tar -czpf $DIR_BASE/backups-local/full_$FECHA.tar.gz -g $DIR_BASE/snaps-local/full_$FECHA.snap $DIRS_BACKUP
 else
-  tar $EXC_DIRS_BACKUP -czpf $DIR_BASE/backups-local/full_$FECHA.tar.gz -g $DIR_BASE/snaps-local/full_$FECHA.snaps $DIRS_BACKUP
+  tar $EXC_DIRS_BACKUP -czpf $DIR_BASE/backups-local/full_$FECHA.tar.gz -g $DIR_BASE/snaps-local/full_$FECHA.snap $DIRS_BACKUP
 fi
 
 # Comprobar la planificación de backups
@@ -146,13 +146,13 @@ DIRS_BACKUP=$(cat $DIR_BASE/dirs-backup-local | grep -v "#" | tr -t "\n" " ")
 EXC_DIRS_BACKUP=$(cat $DIR_BASE/exc-dirs-backup-local | grep -v "#" | tr -t "\n" " ")
 # Creamos nuevo snapsshot copiando el último creado en "snaps-local"
 ULT_snaps=$(ls -t $DIR_BASE/snaps-local | head -1)
-cp $DIR_BASE/snaps-local/$ULT_snaps $DIR_BASE/snaps-local/inc_$FECHA.snaps
+cp $DIR_BASE/snaps-local/$ULT_snaps $DIR_BASE/snaps-local/inc_$FECHA.snap
 # Realizamos backup incremental de $dirs-backup-local
 if [ -z $EXC_DIRS_BACKUP ]
 then
-  tar -czpf $DIR_BASE/backups-local/inc_$FECHA.tar.gz -g $DIR_BASE/snaps-local/inc_$FECHA.snaps $DIRS_BACKUP
+  tar -czpf $DIR_BASE/backups-local/inc_$FECHA.tar.gz -g $DIR_BASE/snaps-local/inc_$FECHA.snap $DIRS_BACKUP
 else
-  tar $EXC_DIRS_BACKUP -czpf $DIR_BASE/backups-local/inc_$FECHA.tar.gz -g $DIR_BASE/snaps-local/inc_$FECHA.snaps $DIRS_BACKUP
+  tar $EXC_DIRS_BACKUP -czpf $DIR_BASE/backups-local/inc_$FECHA.tar.gz -g $DIR_BASE/snaps-local/inc_$FECHA.snap $DIRS_BACKUP
 fi
 # Comprobar la planificación de backups
 #PLAN_BACKUPS_INC_LOCAL
@@ -199,15 +199,15 @@ EXC_DIRS_BACKUP=$(cat $DIR_BASE/exc-dirs-backup-$1 | grep -v "#" | tr -t "\n" " 
 # Realizamos backup completo de $dirs-backup-$1
 if [ -z $EXC_DIRS_BACKUP ]
 then
-  COMM_REMOTE="tar -czpf - -g /tmp/temporal.snaps $DIRS_BACKUP"
+  COMM_REMOTE="tar -czpf - -g /tmp/temporal.snap $DIRS_BACKUP"
 else
-  COMM_REMOTE="tar $EXC_DIRS_BACKUP -czpf - -g /tmp/temporal.snaps $DIRS_BACKUP"
+  COMM_REMOTE="tar $EXC_DIRS_BACKUP -czpf - -g /tmp/temporal.snap $DIRS_BACKUP"
 fi
 
 # Ejecutamos backup remoto
 ssh root@$1 $COMM_REMOTE > $DIR_BASE/backups-$1/full_$FECHA.tar.gz
-scp root@$1:/tmp/temporal.snaps $DIR_BASE/snaps-$1/full_$FECHA.snaps
-ssh root@$1 "rm /tmp/temporal.snaps"
+scp root@$1:/tmp/temporal.snap $DIR_BASE/snaps-$1/full_$FECHA.snap
+ssh root@$1 "rm /tmp/temporal.snap"
 
 # Comprobar la planificación de backups
 #PLAN_BACKUPS_FULL_$1
@@ -227,19 +227,19 @@ DIRS_BACKUP=$(cat $DIR_BASE/dirs-backup-$1 | grep -v "#" | tr -t "\n" " ")
 EXC_DIRS_BACKUP=$(cat $DIR_BASE/exc-dirs-backup-$1 | grep -v "#" | tr -t "\n" " ")
 # Creamos nuevo snapsshot copiando el último creado en "snaps-local"
 ULT_snaps=$(ls -t $DIR_BASE/snaps-$1 | head -1)
-scp $DIR_BASE/snaps-$1/$ULT_snaps root@$1:/tmp/temporal.snaps
+scp $DIR_BASE/snaps-$1/$ULT_snaps root@$1:/tmp/temporal.snap
 # Realizamos backup incremental de $dirs-backup-local
 if [ -z $EXC_DIRS_BACKUP ]
 then
-  COMM_REMOTE="tar -czpf - -g /tmp/temporal.snaps $DIRS_BACKUP"
+  COMM_REMOTE="tar -czpf - -g /tmp/temporal.snap $DIRS_BACKUP"
 else
-  COMM_REMOTE="tar $EXC_DIRS_BACKUP -czpf - -g /tmp/temporal.snaps $DIRS_BACKUP"
+  COMM_REMOTE="tar $EXC_DIRS_BACKUP -czpf - -g /tmp/temporal.snap $DIRS_BACKUP"
 fi
 
 # Ejecutamos backup remoto
 ssh root@$1 $COMM_REMOTE > $DIR_BASE/backups-$1/inc_$FECHA.tar.gz
-scp root@$1:/tmp/temporal.snaps $DIR_BASE/snaps-$1/inc_$FECHA.snaps
-ssh root@$1 "rm /tmp/temporal.snaps"
+scp root@$1:/tmp/temporal.snap $DIR_BASE/snaps-$1/inc_$FECHA.snap
+ssh root@$1 "rm /tmp/temporal.snap"
 
 # Comprobar la planificación de backups
 #PLAN_BACKUPS_INC_LOCAL
