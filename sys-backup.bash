@@ -55,27 +55,27 @@ case $1 in
 
     ;;
 
-  # Para ejecutar en remoto
+  # Para ejecutar en remoto ($2 es el HOST)
   remote)
 
-   case $2 in
-    
-      # Añade un directorio($4) para las copias de seguridad con una descripción($3)
+   case $3 in
+
+      # Añade un directorio($5) para las copias de seguridad con una descripción($4) y wl HOST($2)
       add-dir)
-        ADD_DIR_REMOTE $3 $4
+        ADD_DIR_REMOTE $2 $4 $5 
         ;;
 
       # Crea backup
       backup)
     
-        case $3 in
+        case $4 in
     
           full)
-            BACKUP-FULL_REMOTE
+            BACKUP-FULL_REMOTE $2
             ;;
     
           inc)
-            BACKUP-INC_REMOTE
+            BACKUP-INC_REMOTE $2
             ;;
         esac
         ;;
