@@ -14,16 +14,18 @@ DIR_BASE=`dirname $SCRIPT`
 # Comprobamos si somos ROOT
 COMPROBAR_ROOT
 
-echo -e "\e[1;42m Bienvenido al comprobador de intentos de acceso fallidos por SSH \e[0m "
-echo -e "\e[1;42m ---------------------------- JUANPEBIN ------------------------- \e[0m "
-
 
 case $1 in
   local)
     case $2 in
-      # Ejecuta instalación del script en el sistema en el directorio $2
+      # Ejecuta instalación del script en el sistema en "/opt/sys-backup"
       install)
         INSTALL_SYS-BACKUP_LOCAL
+        ;;
+
+      # Ejecuta eliminación del script en el sistema en "/opt/sys-backup"
+      uninstall)
+        UNINSTALL_SYS-BACKUP_LOCAL
         ;;
     
       # Añade un directorio($4) para las copias de seguridad con una descripción($3)
@@ -34,7 +36,7 @@ case $1 in
       # Crea backup
       backup)
     
-        case $2 in
+        case $3 in
     
           full)
             BACKUP-FULL_LOCAL
@@ -51,9 +53,9 @@ case $1 in
     ;;
   remote)
    case $2 in
-      # Ejecuta instalación del script en el sistema en el directorio $2
+      # Ejecuta instalación del script en el sistema en host $3(IP o FQDN) en el directorio "/opt/sys-backup"
       install)
-        INSTALL_SYS-BACKUP_REMOTE
+        INSTALL_SYS-BACKUP_REMOTE $3
         ;;
     
       # Añade un directorio($4) para las copias de seguridad con una descripción($3)
@@ -64,7 +66,7 @@ case $1 in
       # Crea backup
       backup)
     
-        case $2 in
+        case $3 in
     
           full)
             BACKUP-FULL_REMOTE

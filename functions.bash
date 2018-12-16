@@ -11,7 +11,7 @@ USER_BACKUP=`whoami`
 
 if [ "$USER_BACKUP" != "root" ]
 then
-  echo -e "\e[1;42m Debe de ser el usuario ROOT para ejecutar el script \e[0m "
+  echo -e "\e[1;41m Debe de ser el usuario ROOT para ejecutar el script \e[0m "
   exit
 fi
 
@@ -24,15 +24,31 @@ function INSTALL_SYS-BACKUP_LOCAL
 {
 # Creamos directorios para copias y snapshots
 mkdir -p /opt/sys-backup/backups /opt/sys-backup/snapshots
+echo -e '\e[1;42m Creados los directorios "backups" y "snapshots" en "/opt/sys-backup/" \e[0m'
 # Copiamos los scripts
 cp sys-backup.bash /opt/sys-backup/
 cp functions.bash /opt/sys-backup/
+echo -e '\e[1;42m Copiados los scripts "sys-backup.bash" y "functions.bash" en "/opt/sys-backup/" \e[0m'
 # Creamos el fichero en el que especificamos los directorios para los backups
 touch /opt/sys-backup/dirs-backup
+echo -e '\e[1;42m Creado el fichero "dirs-backup" en "/opt/sys-backup/" \e[0m'
 # Para ejecutar el script
 ln -s /opt/sys-backup/sys-backup.bash /usr/local/bin/sys-backup
 chmod +x /usr/local/bin/sys-backup
+echo -e '\e[1;42m Creado el enlace para ejecución en el sistema de "/opt/sys-backup/sys-backup.bash" en "/usr/local/bin/sys-backup" \e[0m'
 }
+
+
+function UNINSTALL_SYS-BACKUP_LOCAL
+{
+# Eliminamos directorio
+rm -rf /opt/sys-backup
+echo -e '\e[1;42m Eliminado directorio "/opt/sys-backup" \e[0m'
+# Eliminamos enlace de script
+rm -f /usr/local/bin/sys-backup
+echo -e '\e[1;42m Eliminado enlace "/usr/local/bin/sys-backup" \e[0m'
+}
+
 
 function ADD_DIR_LOCAL
 {
@@ -68,6 +84,18 @@ function INSTALL_SYS-BACKUP_REMOTE
 echo "INSTALL_SYS-BACKUP_REMOTE"
 
 }
+
+
+function UNINSTALL_SYS-BACKUP_REMOTE
+{
+# Eliminamos directorio
+rm -rf /opt/sys-backup
+echo -e '\e[1;42m Eliminado directorio "/opt/sys-backup" \e[0m'
+# Eliminamos enlace de script
+rm -f /usr/local/bin/sys-backup
+echo -e '\e[1;42m Eliminado enlace "/usr/local/bin/sys-backup" \e[0m'
+}
+
 
 function ADD_DIR_REMOTE
 {
