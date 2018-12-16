@@ -16,18 +16,21 @@ COMPROBAR_ROOT
 
 
 case $1 in
+
+  # Ejecuta instalación del script en el sistema en "/opt/sys-backup"
+  install)
+    INSTALL_SYS-BACKUP_LOCAL
+    ;;
+
+  # Ejecuta eliminación del script en el sistema en "/opt/sys-backup"
+  uninstall)
+    UNINSTALL_SYS-BACKUP_LOCAL
+    ;;
+
+  # Para ejecutar en local
   local)
     case $2 in
-      # Ejecuta instalación del script en el sistema en "/opt/sys-backup"
-      install)
-        INSTALL_SYS-BACKUP_LOCAL
-        ;;
 
-      # Ejecuta eliminación del script en el sistema en "/opt/sys-backup"
-      uninstall)
-        UNINSTALL_SYS-BACKUP_LOCAL
-        ;;
-    
       # Añade un directorio($4) para las copias de seguridad con una descripción($3)
       add-dir)
         ADD_DIR_LOCAL $3 $4
@@ -51,18 +54,17 @@ case $1 in
     esac
 
     ;;
+
+  # Para ejecutar en remoto
   remote)
+
    case $2 in
-      # Ejecuta instalación del script en el sistema en host $3(IP o FQDN) en el directorio "/opt/sys-backup"
-      install)
-        INSTALL_SYS-BACKUP_REMOTE $3
-        ;;
     
       # Añade un directorio($4) para las copias de seguridad con una descripción($3)
       add-dir)
         ADD_DIR_REMOTE $3 $4
         ;;
-    
+
       # Crea backup
       backup)
     
