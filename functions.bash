@@ -50,8 +50,21 @@ echo -e '\e[1;42m Eliminado enlace "/usr/local/bin/sys-backup" \e[0m'
 }
 
 
+function COMPROBAR_INSTALL_LOCAL
+{
+# Comprobamos si existe el directorio /opt/sys-backup
+if [ ! -d /opt/sys-backup ]
+then
+  echo -e '\e[1;41m No existe el directorio "/opt/sys-backup" \e[0m'
+  echo -e '\e[1;41m Prueba instalando con "sys-backup local install" \e[0m'
+  exit 0
+fi
+}
+
+
 function ADD_DIR_LOCAL
 {
+COMPROBAR_INSTALL_LOCAL
 # Añadimos descripción
 echo "$1 `date +%F`" >> dirs-backup
 # Añadimos directorio a relizar copias
@@ -60,18 +73,34 @@ echo $2 >> dirs-backup
 }
 
 
+function COMPROBAR_BACKUP_VACIO
+{
+# Comprobamos si ya se ha realizado algún backup
+if [ -z "$(ls /opt/sys-backup/backups)" ]
+then
+  echo -e '\e[1;41m No existen backups en "/opt/sys-backup/backups" \e[0m'
+  echo -e '\e[1;41m Prueba creando uno con "sys-backup local backup full" \e[0m'
+  exit 0
+fi
+}
+
+
 function BACKUP-FULL_LOCAL
 {
-
-echo "BACKUP-FULL_LOCAL"
+COMPROBAR_INSTALL_LOCAL
+FECHA=$(date +%F)
+# Directorios para el backup
+DIRS_BACKUP=$(cat dirs-backup | grep -v "#" | tr -t "\n" " ")
+# Realizamos backup completo de $dirs-backup
+tar -czvpf backups/full_$FECHA.tar.gz -g snapshots/full_$FECHA.snap $DIRS-BACKUP
 
 }
 
 
 function BACKUP-INC_LOCAL
 {
-
-echo "BACKUP-FULL_LOCAL"
+COMPROBAR_INSTALL_LOCAL
+COMPROBAR_BACKUP_VACIO
 
 }
 
