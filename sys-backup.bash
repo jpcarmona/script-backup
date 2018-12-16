@@ -4,8 +4,12 @@
 #Autor: Juan Pedro Carmona Romero
 #Descripción: Script principal para sistema de backups
 
+# Directorio script (por si se ejcuta desde otro directorio)
+SCRIPT=$(readlink -f $0)
+DIR_BASE=`dirname $SCRIPT`
+
 # Cargamos funciones
-. functions.bash
+. $DIR_BASE/functions.bash
 
 # Comprobamos si somos ROOT
 COMPROBAR_ROOT
