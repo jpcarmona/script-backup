@@ -4,6 +4,10 @@
 #Autor: Juan Pedro Carmona Romero
 #Descripción: Funciones para sistema de backups
 
+# Directorio script (por si se ejcuta desde otro directorio)
+SCRIPT=$(readlink -f $0)
+DIR_BASE=`dirname $SCRIPT`
+
 function COMPROBAR_ROOT
 {
   
@@ -24,8 +28,8 @@ function INSTALL_SYS-BACKUP_LOCAL
 {
 # Creamos y copiamos - ficheros y directorios necesarios
 mkdir -p /opt/sys-backup/backups-local /opt/sys-backup/snap-local
-cp sys-backup.bash /opt/sys-backup/
-cp functions.bash /opt/sys-backup/
+cp $DIR_BASE/sys-backup.bash /opt/sys-backup/
+cp $DIR_BASE/functions.bash /opt/sys-backup/
 touch /opt/sys-backup/dirs-backup-local
 touch /opt/sys-backup/exc-dirs-backup-local
 ln -s /opt/sys-backup/sys-backup.bash /usr/local/bin/sys-backup
@@ -56,9 +60,9 @@ function ADD_DIR_LOCAL
 {
 #COMPROBAR_INSTALL_LOCAL
 # Añadimos descripción
-echo "#$1 `date +%F`" >> dirs-backup-local
+echo "#$1 `date +%F`" >> $DIR_BASE/dirs-backup-local
 # Añadimos directorio a relizar copias
-echo $2 >> dirs-backup-local
+echo $2 >> $DIR_BASE/dirs-backup-local
 
 }
 
@@ -67,9 +71,9 @@ function ADD_EXC-DIR_LOCAL
 {
 #COMPROBAR_INSTALL_LOCAL
 # Añadimos descripción
-echo "#$1 `date +%F`" >> exc-dirs-backup-local
+echo "#$1 `date +%F`" >> $DIR_BASE/exc-dirs-backup-local
 # Añadimos directorio a excluir copias
-echo "--exclude=$2" >> exc-dirs-backup-local
+echo "--exclude=$2" >> $DIR_BASE/exc-dirs-backup-local
 
 }
 
@@ -115,15 +119,15 @@ function BACKUP-FULL_LOCAL
 #COMPROBAR_DIRS-BACKUP-LOCAL_VACIO
 FECHA=$(date +%F)
 # Directorios para el backup
-DIRS_BACKUP=$(cat dirs-backup-local | grep -v "#" | tr -t "\n" " ")
+DIRS_BACKUP=$(cat $DIR_BASE/dirs-backup-local | grep -v "#" | tr -t "\n" " ")
 # Directorios a excluir para el backup
-EXC_DIRS_BACKUP=$(cat exc-dirs-backup-local | grep -v "#" | tr -t "\n" " ")
+EXC_DIRS_BACKUP=$(cat $DIR_BASE/exc-dirs-backup-local | grep -v "#" | tr -t "\n" " ")
 # Realizamos backup completo de $dirs-backup-local
 if [ -z $EXC_DIRS_BACKUP ]
 then
-  tar -czvpf backups-local/full_$FECHA.tar.gz -g snap-local/full_$FECHA.snap $DIRS_BACKUP
+  tar -czvpf $DIR_BASE/backups-local/full_$FECHA.tar.gz -g $DIR_BASE/snap-local/full_$FECHA.snap $DIRS_BACKUP
 else
-  tar $EXC_DIRS_BACKUP -czvpf backups-local/full_$FECHA.tar.gz -g snap-local/full_$FECHA.snap $DIRS_BACKUP
+  tar $EXC_DIRS_BACKUP -czvpf $DIR_BASE/backups-local/full_$FECHA.tar.gz -g $DIR_BASE/snap-local/full_$FECHA.snap $DIRS_BACKUP
 fi
 
 # Comprobar la planificación de backups
@@ -137,18 +141,18 @@ function BACKUP-INC_LOCAL
 #COMPROBAR_BACKUP_VACIO
 FECHA=$(date +%F)
 # Directorios para el backup
-DIRS_BACKUP=$(cat dirs-backup-local | grep -v "#" | tr -t "\n" " ")
+DIRS_BACKUP=$(cat $DIR_BASE/dirs-backup-local | grep -v "#" | tr -t "\n" " ")
 # Directorios a excluir para el backup
-EXC_DIRS_BACKUP=$(cat exc-dirs-backup-local | grep -v "#" | tr -t "\n" " ")
+EXC_DIRS_BACKUP=$(cat $DIR_BASE/exc-dirs-backup-local | grep -v "#" | tr -t "\n" " ")
 # Creamos nuevo snapshot copiando el último creado en "snap-local"
-ULT_SNAP=$(ls -t snap-local | head -1)
-cp snap-local/$ULT_SNAP snap-local/inc_$FECHA.snap
+ULT_SNAP=$(ls -t $DIR_BASE/snap-local | head -1)
+cp $DIR_BASE/snap-local/$ULT_SNAP $DIR_BASE/snap-local/inc_$FECHA.snap
 # Realizamos backup incremental de $dirs-backup-local
 if [ -z $EXC_DIRS_BACKUP ]
 then
-  tar -czvpf backups-local/inc_$FECHA.tar.gz -g snap-local/inc_$FECHA.snap $DIRS_BACKUP
+  tar -czvpf $DIR_BASE/backups-local/inc_$FECHA.tar.gz -g $DIR_BASE/snap-local/inc_$FECHA.snap $DIRS_BACKUP
 else
-  tar $EXC_DIRS_BACKUP -czvpf backups-local/inc_$FECHA.tar.gz -g snap-local/inc_$FECHA.snap $DIRS_BACKUP
+  tar $EXC_DIRS_BACKUP -czvpf $DIR_BASE/backups-local/inc_$FECHA.tar.gz -g $DIR_BASE/snap-local/inc_$FECHA.snap $DIRS_BACKUP
 fi
 # Comprobar la planificación de backups
 #PLAN_BACKUPS_INC_LOCAL
@@ -164,9 +168,9 @@ function ADD_DIR_REMOTE
 {
 
 # Añadimos descripción
-echo "#$1 $2 `date +%F`" >> dirs-backup-$1
+echo "#$1 $2 `date +%F`" >> $DIR_BASE/dirs-backup-$1
 # Añadimos directorio a relizar copias
-echo $3 >> dirs-backup-$1
+echo $3 >> $DIR_BASE/dirs-backup-$1
 
 
 }
@@ -175,9 +179,9 @@ echo $3 >> dirs-backup-$1
 function ADD_EXC-DIR_REMOTE
 {
 # Añadimos descripción
-echo "#$1 $2 `date +%F`" >> exc-dirs-backup-$1
+echo "#$1 $2 `date +%F`" >> $DIR_BASE/exc-dirs-backup-$1
 # Añadimos directorio a excluir copias
-echo "--exclude=$3" >> exc-dirs-backup-$1
+echo "--exclude=$3" >> $DIR_BASE/exc-dirs-backup-$1
 
 }
 
@@ -189,9 +193,9 @@ function BACKUP-FULL_REMOTE
 #COMPROBAR_DIRS-BACKUP-LOCAL_VACIO
 FECHA=$(date +%F)
 # Directorios para el backup
-DIRS_BACKUP=$(cat dirs-backup-$1 | grep -v "#" | tr -t "\n" " ")
+DIRS_BACKUP=$(cat $DIR_BASE/dirs-backup-$1 | grep -v "#" | tr -t "\n" " ")
 # Directorios a excluir para el backup
-EXC_DIRS_BACKUP=$(cat exc-dirs-backup-$1 | grep -v "#" | tr -t "\n" " ")
+EXC_DIRS_BACKUP=$(cat $DIR_BASE/exc-dirs-backup-$1 | grep -v "#" | tr -t "\n" " ")
 # Realizamos backup completo de $dirs-backup-$1
 if [ -z $EXC_DIRS_BACKUP ]
 then
@@ -201,8 +205,8 @@ else
 fi
 
 # Ejecutamos backup remoto
-ssh root@$1 $COMM_REMOTE > backups-$1/full_$FECHA.tar.gz
-scp root@$1:/tmp/temporal.snap snap-$1/full_$FECHA.snap
+ssh root@$1 $COMM_REMOTE > $DIR_BASE/backups-$1/full_$FECHA.tar.gz
+scp root@$1:/tmp/temporal.snap $DIR_BASE/snap-$1/full_$FECHA.snap
 ssh root@$1 "rm /tmp/temporal.snap"
 
 # Comprobar la planificación de backups
@@ -218,12 +222,12 @@ function BACKUP-INC_REMOTE
 #COMPROBAR_BACKUP_VACIO
 FECHA=$(date +%F)
 # Directorios para el backup
-DIRS_BACKUP=$(cat dirs-backup-$1 | grep -v "#" | tr -t "\n" " ")
+DIRS_BACKUP=$(cat $DIR_BASE/dirs-backup-$1 | grep -v "#" | tr -t "\n" " ")
 # Directorios a excluir para el backup
-EXC_DIRS_BACKUP=$(cat exc-dirs-backup-$1 | grep -v "#" | tr -t "\n" " ")
+EXC_DIRS_BACKUP=$(cat $DIR_BASE/exc-dirs-backup-$1 | grep -v "#" | tr -t "\n" " ")
 # Creamos nuevo snapshot copiando el último creado en "snap-local"
-ULT_SNAP=$(ls -t snap-$1 | head -1)
-scp snap-$1/$ULT_SNAP root@$1:/tmp/temporal.snap
+ULT_SNAP=$(ls -t $DIR_BASE/snap-$1 | head -1)
+scp $DIR_BASE/snap-$1/$ULT_SNAP root@$1:/tmp/temporal.snap
 # Realizamos backup incremental de $dirs-backup-local
 if [ -z $EXC_DIRS_BACKUP ]
 then
@@ -233,8 +237,8 @@ else
 fi
 
 # Ejecutamos backup remoto
-ssh root@$1 $COMM_REMOTE > backups-$1/inc_$FECHA.tar.gz
-scp root@$1:/tmp/temporal.snap snap-$1/inc_$FECHA.snap
+ssh root@$1 $COMM_REMOTE > $DIR_BASE/backups-$1/inc_$FECHA.tar.gz
+scp root@$1:/tmp/temporal.snap $DIR_BASE/snap-$1/inc_$FECHA.snap
 ssh root@$1 "rm /tmp/temporal.snap"
 
 # Comprobar la planificación de backups
