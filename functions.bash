@@ -33,6 +33,7 @@ cp $DIR_BASE/functions.bash /opt/sys-backup/
 touch /opt/sys-backup/dirs-backup-local
 touch /opt/sys-backup/exc-dirs-backup-local
 ln -s /opt/sys-backup/sys-backup.bash /usr/local/bin/sys-backup
+chmod +x /opt/sys-backup/sys-backup.bash
 }
 
 
@@ -124,9 +125,9 @@ EXC_DIRS_BACKUP=$(cat $DIR_BASE/exc-dirs-backup-local | grep -v "#" | tr -t "\n"
 # Realizamos backup completo de $dirs-backup-local
 if [ -z $EXC_DIRS_BACKUP ]
 then
-  tar -czvpf $DIR_BASE/backups-local/full_$FECHA.tar.gz -g $DIR_BASE/snaps-local/full_$FECHA.snaps $DIRS_BACKUP
+  tar -czpf $DIR_BASE/backups-local/full_$FECHA.tar.gz -g $DIR_BASE/snaps-local/full_$FECHA.snaps $DIRS_BACKUP
 else
-  tar $EXC_DIRS_BACKUP -czvpf $DIR_BASE/backups-local/full_$FECHA.tar.gz -g $DIR_BASE/snaps-local/full_$FECHA.snaps $DIRS_BACKUP
+  tar $EXC_DIRS_BACKUP -czpf $DIR_BASE/backups-local/full_$FECHA.tar.gz -g $DIR_BASE/snaps-local/full_$FECHA.snaps $DIRS_BACKUP
 fi
 
 # Comprobar la planificación de backups
@@ -149,9 +150,9 @@ cp $DIR_BASE/snaps-local/$ULT_snaps $DIR_BASE/snaps-local/inc_$FECHA.snaps
 # Realizamos backup incremental de $dirs-backup-local
 if [ -z $EXC_DIRS_BACKUP ]
 then
-  tar -czvpf $DIR_BASE/backups-local/inc_$FECHA.tar.gz -g $DIR_BASE/snaps-local/inc_$FECHA.snaps $DIRS_BACKUP
+  tar -czpf $DIR_BASE/backups-local/inc_$FECHA.tar.gz -g $DIR_BASE/snaps-local/inc_$FECHA.snaps $DIRS_BACKUP
 else
-  tar $EXC_DIRS_BACKUP -czvpf $DIR_BASE/backups-local/inc_$FECHA.tar.gz -g $DIR_BASE/snaps-local/inc_$FECHA.snaps $DIRS_BACKUP
+  tar $EXC_DIRS_BACKUP -czpf $DIR_BASE/backups-local/inc_$FECHA.tar.gz -g $DIR_BASE/snaps-local/inc_$FECHA.snaps $DIRS_BACKUP
 fi
 # Comprobar la planificación de backups
 #PLAN_BACKUPS_INC_LOCAL
@@ -198,9 +199,9 @@ EXC_DIRS_BACKUP=$(cat $DIR_BASE/exc-dirs-backup-$1 | grep -v "#" | tr -t "\n" " 
 # Realizamos backup completo de $dirs-backup-$1
 if [ -z $EXC_DIRS_BACKUP ]
 then
-  COMM_REMOTE="tar -czvpf - -g /tmp/temporal.snaps $DIRS_BACKUP"
+  COMM_REMOTE="tar -czpf - -g /tmp/temporal.snaps $DIRS_BACKUP"
 else
-  COMM_REMOTE="tar $EXC_DIRS_BACKUP -czvpf - -g /tmp/temporal.snaps $DIRS_BACKUP"
+  COMM_REMOTE="tar $EXC_DIRS_BACKUP -czpf - -g /tmp/temporal.snaps $DIRS_BACKUP"
 fi
 
 # Ejecutamos backup remoto
@@ -230,9 +231,9 @@ scp $DIR_BASE/snaps-$1/$ULT_snaps root@$1:/tmp/temporal.snaps
 # Realizamos backup incremental de $dirs-backup-local
 if [ -z $EXC_DIRS_BACKUP ]
 then
-  COMM_REMOTE="tar -czvpf - -g /tmp/temporal.snaps $DIRS_BACKUP"
+  COMM_REMOTE="tar -czpf - -g /tmp/temporal.snaps $DIRS_BACKUP"
 else
-  COMM_REMOTE="tar $EXC_DIRS_BACKUP -czvpf - -g /tmp/temporal.snaps $DIRS_BACKUP"
+  COMM_REMOTE="tar $EXC_DIRS_BACKUP -czpf - -g /tmp/temporal.snaps $DIRS_BACKUP"
 fi
 
 # Ejecutamos backup remoto
