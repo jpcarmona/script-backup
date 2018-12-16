@@ -33,7 +33,6 @@ cp $DIR_BASE/functions.bash /opt/sys-backup/
 touch /opt/sys-backup/dirs-backup-local
 touch /opt/sys-backup/exc-dirs-backup-local
 ln -s /opt/sys-backup/sys-backup.bash /usr/local/bin/sys-backup
-chmod +x /usr/local/bin/sys-backup
 }
 
 
