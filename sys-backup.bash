@@ -35,22 +35,36 @@ case $1 in
       add-dir)
         ADD_DIR_LOCAL $3 $4
         ;;
-    
+
+      # Excluye un directorio($4) para las copias de seguridad con una descripción($3)
+      exc-dir)
+        ADD_EXC-DIR_LOCAL $3 $4
+        ;;
+
       # Crea backup
       backup)
-    
+
         case $3 in
-    
+
           full)
             BACKUP-FULL_LOCAL
             ;;
-    
+
           inc)
             BACKUP-INC_LOCAL
             ;;
+
+          *)
+            GET_AYUDA
+            ;;
+
         esac
         ;;
-    
+
+      *)
+        GET_AYUDA
+        ;;
+
     esac
 
     ;;
@@ -60,27 +74,44 @@ case $1 in
 
    case $3 in
 
-      # Añade un directorio($5) para las copias de seguridad con una descripción($4) y wl HOST($2)
+      # Añade un directorio($5) para las copias de seguridad con una descripción($4) y el HOST($2)
       add-dir)
         ADD_DIR_REMOTE $2 $4 $5 
         ;;
 
+      # Excluye un directorio($5) para las copias de seguridad con una descripción($4) y el HOST($2)
+      exc-dir)
+        ADD_EXC-DIR_REMOTE $2 $4 $5 
+        ;;
+
       # Crea backup
       backup)
-    
+
         case $4 in
-    
+
           full)
             BACKUP-FULL_REMOTE $2
             ;;
-    
+
           inc)
             BACKUP-INC_REMOTE $2
             ;;
+
+          *)
+            GET_AYUDA
+            ;;
+
         esac
         ;;
-    
+
+      *)
+        GET_AYUDA
+        ;;
+
     esac
 
+    ;;
+  *)
+    GET_AYUDA
     ;;
 esac

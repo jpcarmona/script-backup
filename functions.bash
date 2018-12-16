@@ -8,6 +8,7 @@
 SCRIPT=$(readlink -f $0)
 DIR_BASE=`dirname $SCRIPT`
 
+# Comprueba si se ejecuta como ROOT
 function COMPROBAR_ROOT
 {
   
@@ -21,6 +22,14 @@ fi
 
 }
 
+
+# Imprime ayuda
+function GET_AYUDA
+{
+  
+echo "ayuda"
+
+}
 
 ## LOCAL
 
