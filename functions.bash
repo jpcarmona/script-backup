@@ -18,24 +18,84 @@ fi
 }
 
 
-function INSTALL_SYS-BACKUP
+## LOCAL
+
+function INSTALL_SYS-BACKUP_LOCAL
 {
 # Creamos directorios para copias y snapshots
-mkdir -p $1/sys-backup/backups $1/sys-backup/snapshots
+mkdir -p /opt/sys-backup/backups /opt/sys-backup/snapshots
 # Copiamos los scripts
-cp sys-backup.bash $1/sys-backup/
-cp functions.bash $1/sys-backup/
+cp sys-backup.bash /opt/sys-backup/
+cp functions.bash /opt/sys-backup/
 # Creamos el fichero en el que especificamos los directorios para los backups
-touch $1/sys-backup/dirs-backup
+touch /opt/sys-backup/dirs-backup
 # Para ejecutar el script
-ln -s $1/sys-backup/sys-backup.bash /usr/local/bin/sys-backup
+ln -s /opt/sys-backup/sys-backup.bash /usr/local/bin/sys-backup
 chmod +x /usr/local/bin/sys-backup
 }
 
-function ADD_DIR
+function ADD_DIR_LOCAL
 {
 # Añadimos descripción
-echo "$2 `date +%F`" >> dirs-backup
-echo $3 >> dirs-backup
+echo "$1 `date +%F`" >> dirs-backup
+# Añadimos directorio a relizar copias
+echo $2 >> dirs-backup
 
 }
+
+
+function BACKUP-FULL_LOCAL
+{
+
+echo "BACKUP-FULL_LOCAL"
+
+}
+
+
+function BACKUP-INC_LOCAL
+{
+
+echo "BACKUP-FULL_LOCAL"
+
+}
+
+
+## REMOTO
+
+function INSTALL_SYS-BACKUP_REMOTE
+{
+
+echo "INSTALL_SYS-BACKUP_REMOTE"
+
+}
+
+function ADD_DIR_REMOTE
+{
+
+echo "ADD_DIR_REMOTE"
+
+}
+
+
+function BACKUP-FULL_REMOTE
+{
+
+echo "BACKUP-FULL_REMOTE"
+
+}
+
+
+function BACKUP-INC_REMOTE
+{
+
+echo "BACKUP-INC_REMOTE"
+
+}
+
+
+# DEJAR POR SI ACASO
+ls -w 1 -t /etc/ | head -1
+
+
+linea=$(grep "completa=" ola)
+sed -ri "s/$linea/completa=alli/g" config
