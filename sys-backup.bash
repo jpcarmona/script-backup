@@ -41,6 +41,16 @@ case $1 in
         ADD_EXC-DIR_LOCAL $3 $4
         ;;
 
+      # Executa backup para cron
+      cron-backup)
+        CRON_BACKUP_LOCAL
+        ;;
+
+      # Añade crontab para realizar las copias automáticas
+      add-cron)
+        ADD-CRON_LOCAL
+        ;;
+
       # Crea backup
       backup)
 
