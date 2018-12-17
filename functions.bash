@@ -283,13 +283,13 @@ then
   RESTORE_DPKG_LOCAL $1
   for FICHERO in $BACKUPS
   do
-    tar -xzpf /opt/sys-backup/backups-local/$FICHERO -C /
+    tar -xzpf $FICHERO -C /
   done
 else 
   FILE_TAR=$(echo $2 | cut -d "/" -f 2-)
   for FICHERO in $BACKUPS
   do
-    tar -xzpf /opt/sys-backup/backups-local/$FICHERO -C / $FILE_TAR
+    tar -xzpf $FICHERO -C / $FILE_TAR
   done
 fi
 
@@ -485,7 +485,7 @@ then
   mkdir /tmp/temporal-backups
   for FICHERO in $BACKUPS
   do
-    tar -xzpf /opt/sys-backup/backups-$1/$FICHERO -C /tmp/temporal-backups/
+    tar -xzpf $FICHERO -C /tmp/temporal-backups/
   done
   scp -r /tmp/temporal-backups/ root@$1:/
   rm -r /tmp/temporal-backups
@@ -493,7 +493,7 @@ else
   FILE_TAR=$(echo $3 | cut -d "/" -f 2-)
   for FICHERO in $BACKUPS
   do
-    tar -xzpf /opt/sys-backup/backups-$1/$FICHERO -C /tmp/temporal-backups/ $FILE_TAR
+    tar -xzpf $FICHERO -C /tmp/temporal-backups/ $FILE_TAR
   done
   scp -r /tmp/temporal-backups/ root@$1:/
   rm -r /tmp/temporal-backups
