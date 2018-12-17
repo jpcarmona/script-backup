@@ -393,8 +393,9 @@ sed -i "/$LINEA_CRON/d" /etc/crontab
 }
 
 
-function RESTORE_REMOTE
-{
-
-
-}
+#function RESTORE_REMOTE
+#{
+#
+#
+#
+#}
