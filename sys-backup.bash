@@ -56,6 +56,11 @@ case $1 in
         DEL-CRON_LOCAL
         ;;
 
+      # Restauración completa o parcial dada una fecha "$3" y alternativamente un fichero o directorio "$4"
+      restore)
+        RESTORE_LOCAL $3 $4
+        ;;
+
       # Crea backup
       backup)
 
@@ -97,6 +102,21 @@ case $1 in
       # Excluye un directorio($4) para las copias de seguridad en el HOST($2)
       exc-dir)
         ADD_EXC-DIR_REMOTE $2 $4
+        ;;
+
+      # Executa backup para cron
+      cron-backup)
+        CRON_BACKUP_REMOTE $2
+        ;;
+
+      # Añade crontab para realizar las copias automáticas locales
+      add-cron)
+        ADD-CRON_REMOTE $2
+        ;;
+
+      # Elimina cron local de backups
+      add-cron)
+        DEL-CRON_REMOTE $2
         ;;
 
       # Crea backup

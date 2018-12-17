@@ -146,12 +146,12 @@ echo "--exclude=$1" >> $DIR_BASE/exc-dirs-backup-local
 #}
 
 
-#function PLAN_BACKUPS_FULL_LOCAL
+#function PLAN_BACKUPS_FULL
 #{
 #
 #}
 #
-#function PLAN_BACKUPS_INC_LOCAL
+#function PLAN_BACKUPS_INC
 #{
 #
 #}
@@ -175,7 +175,7 @@ else
 fi
 
 ## Comprobar la planificación de backups
-#PLAN_BACKUPS_FULL_LOCAL
+#PLAN_BACKUPS_FULL local
 }
 
 
@@ -199,7 +199,7 @@ else
   tar $EXC_DIRS_BACKUP -czpf $DIR_BASE/backups-local/inc_$FECHA.tar.gz -g $DIR_BASE/snaps-local/inc_$FECHA.snap $DIRS_BACKUP
 fi
 ## Comprobar la planificación de backups
-#PLAN_BACKUPS_INC_LOCAL
+#PLAN_BACKUPS_INC local
 }
 
 
@@ -217,13 +217,13 @@ fi
 
 }
 
+
 function ADD-CRON_LOCAL
 {
 
 ## Añadimos al crontab la ejecución del backup todos los dias a las "01:01"
 echo "1 1 * * * root sys-backup local cron-backup # sys-backup local" >> /etc/crontab
 }
-
 
 
 function DEL-CRON_LOCAL
@@ -235,9 +235,47 @@ sed -i "/$LINEA_CRON/d" /etc/crontab
 }
 
 
+function RESTORE_LOCAL
+{
+# "$1" es la fecha en la que se quiere restaurar
+# Número de dias desde el backup completo
+DIAS=$(date -d "$1" +%u)
+# Añadimos un día para poder realizar bien el find
+FECHA_FIN=$(date -d "$1 +1 day" +%F)
+
+# Fecha del backup full
+if [ $DIAS -eq 7 ]
+then
+  FECHA_FULL=$1
+else
+  FECHA_FULL=$(date -d "$1 -$DIAS day" +%F)
+fi
+
+# Ficheros de backups para la fecha dada
+BACKUPS=$(find /opt/sys-backup/backups-local -type f -newermt $FECHA_FULL ! -newermt $FECHA_FIN)
+
+# Si se especifica fichero o directorio concreto en "$2" realiza solo restauración de ese, sino se realiza restauración completa #
+if [ -z "$2" ]
+then
+  for fichero in $BACKUPS
+  do
+    tar -xzpf /opt/sys-backup/backups-local/$fichero -C /
+  done
+else 
+  FILE_TAR=$(echo $2 | cut -d "/" -f 2-)
+  for FICHERO in $BACKUPS
+  do
+    tar -xzpf /opt/sys-backup/backups-local/$FICHERO -C / $FILE_TAR
+  done
+fi
+
+}
+
+
 ## REMOTO ##########
-# Importante tener añadido manualmente los servidores remotos en el known hosts #
-# y tener configuradas las claves públicas y privadas en authorized_keys. #
+# Importante tener añadido manualmente los servidores remotos en el known hosts, #
+# tener configuradas las claves públicas y privadas en authorized_keys #
+# y permitir el acceso mediante ROOT. #
 ####################
 
 function ADD_DIR_REMOTE
@@ -286,7 +324,7 @@ scp root@$1:/tmp/temporal.snap $DIR_BASE/snaps-$1/full_$FECHA.snap
 ssh root@$1 "rm /tmp/temporal.snap"
 
 ## Comprobar la planificación de backups
-#PLAN_BACKUPS_FULL_$1
+#PLAN_BACKUPS_FULL $1
 
 }
 
@@ -318,11 +356,45 @@ scp root@$1:/tmp/temporal.snap $DIR_BASE/snaps-$1/inc_$FECHA.snap
 ssh root@$1 "rm /tmp/temporal.snap"
 
 # Comprobar la planificación de backups
-#PLAN_BACKUPS_INC_LOCAL
+#PLAN_BACKUPS_INC $1
 
 }
 
 
-# DEJAR POR SI ACASO
-#linea=$(grep "completa=" ola)
-#sed -ri "s/$linea/completa=alli/g" config
+function CRON_BACKUP_REMOTE
+{
+## Día de la semana en número ("1" es Lunes)
+FECHA_DIA=$(date +%u)
+## Comprobamos si es Domingo
+if [ $FECHA_DIA -eq 7 ]
+then
+  BACKUP-FULL_REMOTE $1
+else
+  BACKUP-INC_REMOTE $1
+fi
+
+}
+
+
+function ADD-CRON_REMOTE
+{
+
+## Añadimos al crontab la ejecución del backup todos los dias a las "01:01"
+echo "1 1 * * * root sys-backup remote $1 cron-backup # sys-backup $1" >> /etc/crontab
+}
+
+
+function DEL-CRON_REMOTE
+{
+
+## Quitamos la línea en crontab que ejecuta los backups
+LINEA_CRON=$(grep "sys-backup $1" /etc/crontab)
+sed -i "/$LINEA_CRON/d" /etc/crontab
+}
+
+
+function RESTORE_REMOTE
+{
+
+
+}
