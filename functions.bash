@@ -104,9 +104,9 @@ function ADD_DIR_LOCAL
 {
 #COMPROBAR_INSTALL_LOCAL
 ## Añadimos descripción
-echo "#$1 `date +%F`" >> $DIR_BASE/dirs-backup-local
+echo "# $1 `date +%F`" >> $DIR_BASE/dirs-backup-local
 ## Añadimos directorio a relizar copias
-echo $2 >> $DIR_BASE/dirs-backup-local
+echo $1 >> $DIR_BASE/dirs-backup-local
 
 }
 
@@ -115,9 +115,9 @@ function ADD_EXC-DIR_LOCAL
 {
 #COMPROBAR_INSTALL_LOCAL
 ## Añadimos descripción
-echo "#$1 `date +%F`" >> $DIR_BASE/exc-dirs-backup-local
+echo "# $1 `date +%F`" >> $DIR_BASE/exc-dirs-backup-local
 ## Añadimos directorio a excluir copias
-echo "--exclude=$2" >> $DIR_BASE/exc-dirs-backup-local
+echo "--exclude=$1" >> $DIR_BASE/exc-dirs-backup-local
 
 }
 
@@ -234,9 +234,9 @@ function ADD_DIR_REMOTE
 {
 
 ## Añadimos descripción
-echo "#$1 $2 `date +%F`" >> $DIR_BASE/dirs-backup-$1
+echo "# $1 $2 `date +%F`" >> $DIR_BASE/dirs-backup-$1
 ## Añadimos directorio a relizar copias
-echo $3 >> $DIR_BASE/dirs-backup-$1
+echo $2 >> $DIR_BASE/dirs-backup-$1
 
 
 }
@@ -245,9 +245,9 @@ echo $3 >> $DIR_BASE/dirs-backup-$1
 function ADD_EXC-DIR_REMOTE
 {
 ## Añadimos descripción
-echo "#$1 $2 `date +%F`" >> $DIR_BASE/exc-dirs-backup-$1
+echo "# $1 $2 `date +%F`" >> $DIR_BASE/exc-dirs-backup-$1
 ## Añadimos directorio a excluir copias
-echo "--exclude=$3" >> $DIR_BASE/exc-dirs-backup-$1
+echo "--exclude=$2" >> $DIR_BASE/exc-dirs-backup-$1
 
 }
 

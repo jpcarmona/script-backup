@@ -31,14 +31,14 @@ case $1 in
   local)
     case $2 in
 
-      # Añade un directorio($4) para las copias de seguridad con una descripción($3)
+      # Añade un directorio($3) para las copias de seguridad
       add-dir)
-        ADD_DIR_LOCAL $3 $4
+        ADD_DIR_LOCAL $3
         ;;
 
-      # Excluye un directorio($4) para las copias de seguridad con una descripción($3)
+      # Excluye un directorio($3) para las copias de seguridad
       exc-dir)
-        ADD_EXC-DIR_LOCAL $3 $4
+        ADD_EXC-DIR_LOCAL $3
         ;;
 
       # Executa backup para cron
@@ -84,14 +84,14 @@ case $1 in
 
    case $3 in
 
-      # Añade un directorio($5) para las copias de seguridad con una descripción($4) y el HOST($2)
+      # Añade un directorio($4) para las copias de seguridad en el HOST($2)
       add-dir)
-        ADD_DIR_REMOTE $2 $4 $5 
+        ADD_DIR_REMOTE $2 $4
         ;;
 
-      # Excluye un directorio($5) para las copias de seguridad con una descripción($4) y el HOST($2)
+      # Excluye un directorio($4) para las copias de seguridad en el HOST($2)
       exc-dir)
-        ADD_EXC-DIR_REMOTE $2 $4 $5 
+        ADD_EXC-DIR_REMOTE $2 $4
         ;;
 
       # Crea backup
