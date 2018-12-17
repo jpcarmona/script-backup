@@ -85,6 +85,11 @@ function UNINSTALL_SYS-BACKUP
 {
 rm -rf /opt/sys-backup
 rm -f /usr/local/bin/sys-backup
+LINEAS_CRON=$(cat /etc/crontab | grep "sys-backup")
+for LINEA in $LINEAS_CRON
+do
+  sed -i "/$LINEA/d" /etc/crontab
+done
 }
 
 
