@@ -405,6 +405,8 @@ function ADD-CRON_REMOTE
 {
 ## Añadimos directrio para backups remotos de $1
 mkdir /opt/sys-backup/backups-$1
+mkdir /opt/sys-backup/snaps-$1
+touch /opt/sys-backup/exc-dirs-backup-$1
 ## Añadimos al crontab la ejecución del backup todos los dias a las "01:01"
 echo "1 1 * * * root sys-backup remote $1 cron-backup # sys-backup $1" >> /etc/crontab
 }
