@@ -422,18 +422,37 @@ sed -i "/$LINEA_CRON/d" /etc/crontab
 function BACKUP_DPKG_REMOTE
 {
 FECHA=$(date +%F)
+# Varable para comprobar que tipo de distribuición es
+SYSTEM-OS=$(ssh root@$1 "cat /etc/os-release")
+
 ## Creamos lista de paquetes instalados
-ssh root@$1 "dpkg --get-selections" > /opt/sys-backup/dpkg/dpkg-$1_$FECHA
+if [ $( echo $SYSTEM-OS | grep debian) ]
+then
+  ssh root@$1 "dpkg --get-selections" > /opt/sys-backup/dpkg/dpkg-$1_$FECHA
+elif [ $( echo $SYSTEM-OS | grep centos)  ]
+then
+  ssh root@$1 "rpm -qa" > /opt/sys-backup/dpkg/dpkg-$1_$FECHA
+  sed -i 's/^/install /' /opt/sys-backup/dpkg/dpkg-$1_$FECHA
+  echo run >> /opt/sys-backup/dpkg/dpkg-$1_$FECHA
+fi
 
 }
 
 
 function RESTORE_DPKG_REMOTE
 {
+# Varable para comprobar que tipo de distribuición es
+SYSTEM-OS=$(ssh root@$1 "cat /etc/os-release")
 
-ssh root@$1 "apt update && apt -y install dselect && dselect update"
-ssh root@$1 "dpkg --set-selections" < /opt/sys-backup/dpkg/dpkg-$1_$2
-ssh root@$1 "apt-get dselect-upgrade -y"
+if [ $( echo $SYSTEM-OS | grep debian) ]
+then
+  ssh root@$1 "apt update && apt -y install dselect && dselect update"
+  ssh root@$1 "dpkg --set-selections" < /opt/sys-backup/dpkg/dpkg-$1_$2
+  ssh root@$1 "apt-get dselect-upgrade -y"
+elif [ $( echo $SYSTEM-OS | grep centos)  ]
+then
+  ssh root@$1 "yum shell" < /opt/sys-backup/dpkg/dpkg-$1_$FECHA
+fi
 
 }
 
