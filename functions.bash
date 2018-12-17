@@ -106,7 +106,7 @@ function ADD_DIR_LOCAL
 ## Añadimos descripción
 echo "# $1 `date +%F`" >> /opt/sys-backup/dirs-backup-local
 ## Añadimos directorio a relizar copias
-echo $1 >> /opt/sys-backup/opt/sys-backup/dirs-backup-local
+echo $1 >> /opt/sys-backup/dirs-backup-local
 
 }
 
