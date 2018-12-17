@@ -19,12 +19,12 @@ case $1 in
 
   # Ejecuta instalación del script en el sistema en "/opt/sys-backup"
   install)
-    INSTALL_SYS-BACKUP_LOCAL
+    INSTALL_SYS-BACKUP
     ;;
 
   # Ejecuta eliminación del script en el sistema en "/opt/sys-backup"
   uninstall)
-    UNINSTALL_SYS-BACKUP_LOCAL
+    UNINSTALL_SYS-BACKUP
     ;;
 
   # Para ejecutar en local
@@ -56,7 +56,7 @@ case $1 in
         DEL-CRON_LOCAL
         ;;
 
-      # Restauración completa o parcial dada una fecha "$3" y alternativamente un fichero o directorio "$4"
+      # Restauración local completa o parcial dada una fecha "$3" y alternativamente un fichero o directorio "$4"
       restore)
         RESTORE_LOCAL $3 $4
         ;;
@@ -117,6 +117,11 @@ case $1 in
       # Elimina cron local de backups
       add-cron)
         DEL-CRON_REMOTE $2
+        ;;
+
+      # Restauración remota completa o parcial dada una fecha "$4" y alternativamente un fichero o directorio "$5"
+      restore)
+        RESTORE_REMOTE $2 $4 $5
         ;;
 
       # Crea backup
