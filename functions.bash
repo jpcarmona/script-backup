@@ -437,9 +437,6 @@ ssh root@$1 "apt-get dselect-upgrade -y"
 
 }
 
-cat >> prueba2 < prueba.dpkg
-
-
 function RESTORE_REMOTE
 {
 # "$1" es la fecha en la que se quiere restaurar
