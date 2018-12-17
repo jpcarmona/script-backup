@@ -31,12 +31,12 @@ case $1 in
   local)
     case $2 in
 
-      # Añade un directorio($3) para las copias de seguridad
+      # Añade un directorio($3) para las copias de seguridad locales
       add-dir)
         ADD_DIR_LOCAL $3
         ;;
 
-      # Excluye un directorio($3) para las copias de seguridad
+      # Excluye un directorio($3) para las copias de seguridad locales
       exc-dir)
         ADD_EXC-DIR_LOCAL $3
         ;;
@@ -46,9 +46,14 @@ case $1 in
         CRON_BACKUP_LOCAL
         ;;
 
-      # Añade crontab para realizar las copias automáticas
+      # Añade crontab para realizar las copias automáticas locales
       add-cron)
         ADD-CRON_LOCAL
+        ;;
+
+      # Elimina cron local de backups
+      add-cron)
+        DEL-CRON_LOCAL
         ;;
 
       # Crea backup

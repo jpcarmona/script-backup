@@ -219,9 +219,19 @@ fi
 
 function ADD-CRON_LOCAL
 {
-#COMPROBAR_INSTALL_LOCAL
-#COMPROBAR_BACKUP_VACIO
-echo "1 1 * * * root sys-backup local cron-backup # sys-backup local"
+
+## Añadimos al crontab la ejecución del backup todos los dias a las "01:01"
+echo "1 1 * * * root sys-backup local cron-backup # sys-backup local" >> /etc/crontab
+}
+
+
+
+function DEL-CRON_LOCAL
+{
+
+## Quitamos la línea en crontab que ejecuta los backups
+LINEA_CRON=$(grep "sys-backup local" /etc/crontab)
+sed -i "/$LINEA_CRON/d" /etc/crontab
 }
 
 
