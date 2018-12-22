@@ -59,7 +59,7 @@ echo ""
 }
 
 ## DIRECTORIO BACKUPS
-PATH_BACKUPS=$PATH_BACKUPS
+PATH_BACKUPS=/var/backups/sys-backup
 
 ## LOCAL
 
