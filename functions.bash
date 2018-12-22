@@ -484,15 +484,15 @@ fi
 function INSERT_COCONUT
 {
 # Establecemos variables para la inserción de datos en coconut
-if [ "$1"=="local" ]
+if [ "$1" == "local" ]
 then
   PG_IP="172.22.200.54"
   PG_COMENTARIO="FULL-RAJOY"
-elif [ "$1"=="10.0.0.9" ]
+elif [ "$1" == "10.0.0.9" ]
 then
   PG_IP="172.22.200.105"
   PG_COMENTARIO="FULL-ZAPATERO"
-elif [ "$1"=="10.0.0.15" ]
+elif [ "$1" == "10.0.0.15" ]
 then
   PG_IP="172.22.200.68"
   PG_COMENTARIO="FULL-AZNAR"
