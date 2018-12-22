@@ -400,12 +400,13 @@ function BACKUP_PKG_REMOTE
 FECHA=$(date +%F)
 # Variable para comprobar que tipo de distribuición es
 SYSTEM_OS=$(ssh root@$1 "cat /etc/os-release")
-
+SYSTEM_DEBIAN=$(echo $SYSTEM_OS | grep debian)
+SYSTEM_CENTOS=$(echo $SYSTEM_OS | grep centos)
 ## Creamos lista de paquetes instalados
-if [ $( echo $SYSTEM_OS | grep debian) ]
+if [ -n $SYSTEM_DEBIAN ]
 then
   ssh root@$1 "dpkg --get-selections" > $PATH_BACKUPS/list-pkgs/$1/$FECHA
-elif [ $( echo $SYSTEM_OS | grep centos)  ]
+elif [ -n $SYSTEM_CENTOS ]
 then
   ssh root@$1 "rpm -qa" > $PATH_BACKUPS/list-pkgs/$1/$FECHA
   sed -i 's/^/install /' $PATH_BACKUPS/list-pkgs/$1/$FECHA
@@ -419,13 +420,15 @@ function RESTORE_PKG_REMOTE
 {
 # Variable para comprobar que tipo de distribuición es
 SYSTEM_OS=$(ssh root@$1 "cat /etc/os-release")
+SYSTEM_DEBIAN=$(echo $SYSTEM_OS | grep debian)
+SYSTEM_CENTOS=$(echo $SYSTEM_OS | grep centos)
 
-if [ $( echo $SYSTEM_OS | grep debian) ]
+if [ -n $SYSTEM_DEBIAN ]
 then
   ssh root@$1 "apt update && apt -y install dselect && dselect update"
   ssh root@$1 "dpkg --set-selections" < $PATH_BACKUPS/list-pkgs/$1/$2
   ssh root@$1 "apt-get dselect-upgrade -y"
-elif [ $( echo $SYSTEM_OS | grep centos)  ]
+elif [ -n $SYSTEM_CENTOS ]
 then
   ssh root@$1 "yum shell" < $PATH_BACKUPS/list-pkgs/$1/$2
 fi
