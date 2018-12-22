@@ -31,6 +31,11 @@ case $1 in
   local)
     case $2 in
 
+      # Crea directorio y ficheros necesarios en local
+      install)
+        INSTALL_SYS-BACKUP_LOCAL
+        ;;
+
       # Añade un directorio($3) para las copias de seguridad locales
       add-dir)
         ADD_DIR_LOCAL $3
@@ -93,6 +98,11 @@ case $1 in
   remote)
 
    case $3 in
+
+      # Crea directorio y ficheros necesarios en local para backups remotos
+      install)
+        INSTALL_SYS-BACKUP_REMOTE $2
+        ;;
 
       # Añade un directorio($4) para las copias de seguridad en el HOST($2)
       add-dir)

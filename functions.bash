@@ -72,10 +72,6 @@ function INSTALL_SYS-BACKUP
 {
 # Directorios Backups
 mkdir -p $PATH_BACKUPS/backups $PATH_BACKUPS/snaps $PATH_BACKUPS/list-pkgs $PATH_BACKUPS/dir-backups
-# Creamos enlace para ejecutar script en local
-ln -s /opt/sys-backup/sys-backup.bash /usr/local/sbin/sys-backup
-# Damos permiso para ejecución de script
-chmod +x /opt/sys-backup/sys-backup.bash
 }
 
 
@@ -91,17 +87,15 @@ done
 }
 
 
-#function COMPROBAR_INSTALL_LOCAL
-#{
-## Comprobamos si existe el directorio /opt/sys-backup
-#if [ ! -d /opt/sys-backup ]
-#then
-#  echo -e '\e[1;41m No existe el directorio "/opt/sys-backup" \e[0m'
-#  echo -e '\e[1;41m Prueba instalando con "sys-backup local install" \e[0m'
-#  exit 0
-#fi
-#}
-
+## Creamos - ficheros y directorios necesarios
+function INSTALL_SYS-BACKUP_LOCAL
+{
+mkdir $PATH_BACKUPS/backups/local
+mkdir $PATH_BACKUPS/snaps/local
+mkdir $PATH_BACKUPS/list-pkgs/local
+touch $PATH_BACKUPS/dir-backups/local
+touch $PATH_BACKUPS/dir-backups/exc-local
+}
 
 function ADD_DIR_LOCAL
 {
@@ -124,31 +118,6 @@ echo "# $1 `date +%F`" >> $PATH_BACKUPS/dir-backups/exc-local
 echo "--exclude=$1" >> $PATH_BACKUPS/dir-backups/exc-local
 
 }
-
-
-#function COMPROBAR_BACKUP_VACIO
-#{
-## Comprobamos si ya se ha realizado algún backup
-#if [ -z "$(ls /opt/sys-backup/backups)" ]
-#then
-#  echo -e '\e[1;41m No existen backups en "/opt/sys-backup/backups" \e[0m'
-#  echo -e '\e[1;41m Prueba creando uno con "sys-backup local backup full" \e[0m'
-#  exit 0
-#fi
-#}
-#
-#
-#function COMPROBAR_DIRS-BACKUP-LOCAL_VACIO
-#{
-## Comprobamos si ya se ha realizado algún backup
-#if [ -z "$(cat dirs-backup-local | grep -v "#" | tr -t "\n" " ")" ]
-#then
-#  echo -e '\e[1;41m No existen backups en "/opt/sys-backup/backups" \e[0m'
-#  echo -e '\e[1;41m Prueba creando uno con "sys-backup local add-dir <descripción> <directorio>" \e[0m'
-#  exit 0
-#fi
-#}
-
 
 #function PLAN_BACKUPS_FULL
 #{
@@ -175,7 +144,7 @@ if [ -z $EXC_DIRS_BACKUP ]
 then
   tar -czpf $PATH_BACKUPS/backups/local/full_$FECHA.tar.gz -g $PATH_BACKUPS/snaps/local/full_$FECHA.snap $DIRS_BACKUP
 else
-  tar $EXC_DIRS_BACKUP -czpf $PATH_BACKUPS/backups/local/full_$FECHA.tar.gz -g var/backups/sys-backup/snaps/local/full_$FECHA.snap $DIRS_BACKUP
+  tar $EXC_DIRS_BACKUP -czpf $PATH_BACKUPS/backups/local/full_$FECHA.tar.gz -g $PATH_BACKUPS//snaps/local/full_$FECHA.snap $DIRS_BACKUP
 fi
 
 ## Comprobar la planificación de backups
@@ -225,11 +194,6 @@ BACKUP_DPKG_LOCAL
 
 function ADD-CRON_LOCAL
 {
-mkdir $PATH_BACKUPS/backups/local
-mkdir $PATH_BACKUPS/snaps/local
-mkdir $PATH_BACKUPS/list-pkgs/local
-touch $PATH_BACKUPS/dir-backups/local
-touch $PATH_BACKUPS/dir-backups/exc-local
 ## Añadimos al crontab la ejecución del backup todos los dias a las "01:01"
 echo "1 1 * * * root sys-backup local cron-backup # sys-backup local" >> /etc/crontab
 }
@@ -309,6 +273,16 @@ fi
 # tener configuradas las claves públicas y privadas en authorized_keys #
 # y permitir el acceso mediante ROOT. #
 ####################
+
+## Creamos - ficheros y directorios necesarios
+function INSTALL_SYS-BACKUP_REMOTE
+{
+mkdir $PATH_BACKUPS/backups/$1
+mkdir $PATH_BACKUPS/snaps/$1
+mkdir $PATH_BACKUPS/list-pkgs/$1
+touch $PATH_BACKUPS/dir-backups/$1
+touch $PATH_BACKUPS/dir-backups/exc-$1
+}
 
 function ADD_DIR_REMOTE
 {
@@ -411,12 +385,6 @@ BACKUP_DPKG_REMOTE $1
 
 function ADD-CRON_REMOTE
 {
-## Añadimos directorios para backups remotos de $1
-mkdir $PATH_BACKUPS/backups/$1
-mkdir $PATH_BACKUPS/snaps/$1
-mkdir $PATH_BACKUPS/list-pkgs/$1
-touch $PATH_BACKUPS/dir-backups/$1
-touch $PATH_BACKUPS/dir-backups/exc-$1
 ## Añadimos al crontab la ejecución del backup todos los dias a las "01:01"
 echo "1 1 * * * root sys-backup remote $1 cron-backup # sys-backup $1" >> /etc/crontab
 }
@@ -434,7 +402,7 @@ sed -i "/$LINEA_CRON/d" /etc/crontab
 function BACKUP_DPKG_REMOTE
 {
 FECHA=$(date +%F)
-# Varable para comprobar que tipo de distribuición es
+# Variable para comprobar que tipo de distribuición es
 SYSTEM-OS=$(ssh root@$1 "cat /etc/os-release")
 
 ## Creamos lista de paquetes instalados
@@ -453,7 +421,7 @@ fi
 
 function RESTORE_DPKG_REMOTE
 {
-# Varable para comprobar que tipo de distribuición es
+# Variable para comprobar que tipo de distribuición es
 SYSTEM-OS=$(ssh root@$1 "cat /etc/os-release")
 
 if [ $( echo $SYSTEM-OS | grep debian) ]
