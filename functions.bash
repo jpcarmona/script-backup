@@ -4,10 +4,6 @@
 #Autor: Juan Pedro Carmona Romero
 #Descripción: Funciones para sistema de backups
 
-## Directorio script (por si se ejcuta desde otro directorio)
-SCRIPT=$(readlink -f $0)
-DIR_BASE=`dirname $SCRIPT`
-
 ## Comprueba si se ejecuta como ROOT
 function COMPROBAR_ROOT
 {
