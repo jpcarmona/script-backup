@@ -180,6 +180,7 @@ FECHA_DIA=$(date +%u)
 if [ $FECHA_DIA -eq 7 ]
 then
   BACKUP-FULL_LOCAL
+  INSERT_COCONUT local
 else
   BACKUP-INC_LOCAL
 fi
@@ -371,6 +372,7 @@ FECHA_DIA=$(date +%u)
 if [ $FECHA_DIA -eq 7 ]
 then
   BACKUP-FULL_REMOTE $1
+  INSERT_COCONUT $1
 else
   BACKUP-INC_REMOTE $1
 fi
@@ -475,5 +477,34 @@ else
   scp -r /tmp/temporal-backups/ root@$1:/
   rm -r /tmp/temporal-backups
 fi
+
+}
+
+
+function INSERT_COCONUT
+{
+# Establecemos variables para la inserción de datos en coconut
+if [ "$1"=="local" ]
+then
+  PG_IP="172.22.200.54"
+  PG_COMENTARIO="FULL-RAJOY"
+elif [ "$1"=="10.0.0.9" ]
+then
+  PG_IP="172.22.200.105"
+  PG_COMENTARIO="FULL-ZAPATERO"
+elif [ "$1"=="10.0.0.15" ]
+then
+  PG_IP="172.22.200.68"
+  PG_COMENTARIO="FULL-AZNAR"
+fi
+
+PG_DIRS=$(cat $PATH_BACKUPS/dir-backups/$1 | grep -v "#" | tr -t "\n" " ")
+PG_DIR_FULL="Copia de $PG_DIRS"
+
+# Variable con el comando a ejecutar en postgres
+PG_COMMAND="INSERT INTO BACKUPS VALUES('juan.carmona','$PG_IP','$PG_COMENTARIO','$PG_DIR_FULL');"
+
+# Ejecutamos inserción de datos en coconut
+PGPASSFILE=~/.pgpass psql -d db_backup -U juan.carmona -h 172.22.200.139 -c "$PG_COMMAND"
 
 }
