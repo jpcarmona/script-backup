@@ -62,21 +62,24 @@ echo ""
 
 }
 
+## DIRECTORIO BACKUPS
+PATH_BACKUPS=$PATH_BACKUPS
+
 ## LOCAL
 
 ## Creamos y copiamos - ficheros y directorios necesarios
 function INSTALL_SYS-BACKUP
 {
-mkdir -p /opt/sys-backup/backups-local /opt/sys-backup/snaps-local /opt/sys-backup/dpkg
-#echo -e '\e[1;42m Creados los directorios "backups", "snaps-local" y "dpkg" en "/opt/sys-backup/" \e[0m'
+# Directorios scripts
+mkdir -p /opt/sys-backup
+# Directorios Backups
+mkdir -p $PATH_BACKUPS/backups $PATH_BACKUPS/snaps $PATH_BACKUPS/list-pkgs $PATH_BACKUPS/dir-backups
+# Copiamos scripts
 cp $DIR_BASE/sys-backup.bash /opt/sys-backup/
 cp $DIR_BASE/functions.bash /opt/sys-backup/
-#echo -e '\e[1;42m Copiados los scripts "sys-backup.bash" y "functions.bash" en "/opt/sys-backup/" \e[0m'
-touch /opt/sys-backup/dirs-backup-local
-touch /opt/sys-backup/exc-dirs-backup-local
-#echo -e '\e[1;42m Creados los ficheros "dirs-backup-local" y "exc-dirs-backup-local" en "/opt/sys-backup/" \e[0m'
-ln -s /opt/sys-backup/sys-backup.bash /usr/local/bin/sys-backup
-#echo -e '\e[1;42m Creado el enlace para ejecución en el sistema de "/opt/sys-backup/sys-backup.bash" en "/usr/local/bin/sys-backup" \e[0m'
+# Creamos enlace para ejecutar script en local
+ln -s /opt/sys-backup/sys-backup.bash /usr/local/sbin/sys-backup
+# Damos permiso para ejecución de script
 chmod +x /opt/sys-backup/sys-backup.bash
 }
 
@@ -109,20 +112,21 @@ function ADD_DIR_LOCAL
 {
 #COMPROBAR_INSTALL_LOCAL
 ## Añadimos descripción
-echo "# $1 `date +%F`" >> /opt/sys-backup/dirs-backup-local
+echo "# $1 `date +%F`" >> $PATH_BACKUPS/dir-backups/local
 ## Añadimos directorio a relizar copias
-echo $1 >> /opt/sys-backup/dirs-backup-local
+echo $1 >> $PATH_BACKUPS/dir-backups/local
 
 }
+### Arreglar para que no permita meter 2 veces el mismo directorio ###
 
 
 function ADD_EXC-DIR_LOCAL
 {
 #COMPROBAR_INSTALL_LOCAL
 ## Añadimos descripción
-echo "# $1 `date +%F`" >> /opt/sys-backup/exc-dirs-backup-local
+echo "# $1 `date +%F`" >> $PATH_BACKUPS/dir-backups/exc-local
 ## Añadimos directorio a excluir copias
-echo "--exclude=$1" >> /opt/sys-backup/exc-dirs-backup-local
+echo "--exclude=$1" >> $PATH_BACKUPS/dir-backups/exc-local
 
 }
 
@@ -168,15 +172,15 @@ function BACKUP-FULL_LOCAL
 #COMPROBAR_DIRS-BACKUP-LOCAL_VACIO
 FECHA=$(date +%F)
 ## Directorios para el backup
-DIRS_BACKUP=$(cat /opt/sys-backup/dirs-backup-local | grep -v "#" | tr -t "\n" " ")
+DIRS_BACKUP=$(cat $PATH_BACKUPS/dir-backups/local | grep -v "#" | tr -t "\n" " ")
 ## Directorios a excluir para el backup
-EXC_DIRS_BACKUP=$(cat /opt/sys-backup/exc-dirs-backup-local | grep -v "#" | tr -t "\n" " ")
+EXC_DIRS_BACKUP=$(cat $PATH_BACKUPS/dir-backups/exc-local | grep -v "#" | tr -t "\n" " ")
 ## Realizamos backup completo de $dirs-backup-local
 if [ -z $EXC_DIRS_BACKUP ]
 then
-  tar -czpf /opt/sys-backup/backups-local/full_$FECHA.tar.gz -g /opt/sys-backup/snaps-local/full_$FECHA.snap $DIRS_BACKUP
+  tar -czpf $PATH_BACKUPS/backups/local/full_$FECHA.tar.gz -g $PATH_BACKUPS/snaps/local/full_$FECHA.snap $DIRS_BACKUP
 else
-  tar $EXC_DIRS_BACKUP -czpf /opt/sys-backup/backups-local/full_$FECHA.tar.gz -g /opt/sys-backup/snaps-local/full_$FECHA.snap $DIRS_BACKUP
+  tar $EXC_DIRS_BACKUP -czpf $PATH_BACKUPS/backups/local/full_$FECHA.tar.gz -g var/backups/sys-backup/snaps/local/full_$FECHA.snap $DIRS_BACKUP
 fi
 
 ## Comprobar la planificación de backups
@@ -190,18 +194,18 @@ function BACKUP-INC_LOCAL
 #COMPROBAR_BACKUP_VACIO
 FECHA=$(date +%F)
 ## Directorios para el backup
-DIRS_BACKUP=$(cat /opt/sys-backup/dirs-backup-local | grep -v "#" | tr -t "\n" " ")
+DIRS_BACKUP=$(cat $PATH_BACKUPS/dir-backups/local | grep -v "#" | tr -t "\n" " ")
 ## Directorios a excluir para el backup
-EXC_DIRS_BACKUP=$(cat /opt/sys-backup/exc-dirs-backup-local | grep -v "#" | tr -t "\n" " ")
+EXC_DIRS_BACKUP=$(cat $PATH_BACKUPS/dir-backups/exc-local | grep -v "#" | tr -t "\n" " ")
 ## Creamos nuevo snapsshot copiando el último creado en "snaps-local"
-ULT_snaps=$(ls -t /opt/sys-backup/snaps-local | head -1)
-cp /opt/sys-backup/snaps-local/$ULT_snaps /opt/sys-backup/snaps-local/inc_$FECHA.snap
+ULT_SNAP=$(ls -t $PATH_BACKUPS/snaps/local | head -1)
+cp $PATH_BACKUPS/snaps/local/$ULT_SNAP $PATH_BACKUPS/snaps/local/inc_$FECHA.snap
 ## Realizamos backup incremental de $dirs-backup-local
 if [ -z $EXC_DIRS_BACKUP ]
 then
-  tar -czpf /opt/sys-backup/backups-local/inc_$FECHA.tar.gz -g /opt/sys-backup/snaps-local/inc_$FECHA.snap $DIRS_BACKUP
+  tar -czpf $PATH_BACKUPS/backups/local/inc_$FECHA.tar.gz -g $PATH_BACKUPS/snaps/local/inc_$FECHA.snap $DIRS_BACKUP
 else
-  tar $EXC_DIRS_BACKUP -czpf /opt/sys-backup/backups-local/inc_$FECHA.tar.gz -g /opt/sys-backup/snaps-local/inc_$FECHA.snap $DIRS_BACKUP
+  tar $EXC_DIRS_BACKUP -czpf $PATH_BACKUPS/backups/local/inc_$FECHA.tar.gz -g $PATH_BACKUPS/snaps/local/inc_$FECHA.snap $DIRS_BACKUP
 fi
 ## Comprobar la planificación de backups
 #PLAN_BACKUPS_INC local
@@ -226,7 +230,11 @@ BACKUP_DPKG_LOCAL
 
 function ADD-CRON_LOCAL
 {
-
+mkdir $PATH_BACKUPS/backups/local
+mkdir $PATH_BACKUPS/snaps/local
+mkdir $PATH_BACKUPS/list-pkgs/local
+touch $PATH_BACKUPS/dir-backups/local
+touch $PATH_BACKUPS/dir-backups/exc-local
 ## Añadimos al crontab la ejecución del backup todos los dias a las "01:01"
 echo "1 1 * * * root sys-backup local cron-backup # sys-backup local" >> /etc/crontab
 }
@@ -245,7 +253,7 @@ function BACKUP_DPKG_LOCAL
 {
 FECHA=$(date +%F)
 ## Creamos lista de paquetes instalados
-dpkg --get-selections > /opt/sys-backup/dpkg/dpkg-local_$FECHA
+dpkg --get-selections > $PATH_BACKUPS/list-pkgs/local/$FECHA
 
 }
 
@@ -256,7 +264,7 @@ function RESTORE_DPKG_LOCAL
 apt update
 apt -y install dselect
 dselect update
-dpkg --set-selections < /opt/sys-backup/dpkg/dpkg-local_$1
+dpkg --set-selections < $PATH_BACKUPS/list-pkgs/local/$1
 apt-get dselect-upgrade -y
 
 }
@@ -279,7 +287,7 @@ else
 fi
 
 # Ficheros de backups para la fecha dada
-BACKUPS=$(find /opt/sys-backup/backups-local -type f -newermt $FECHA_FULL ! -newermt $FECHA_FIN)
+BACKUPS=$(find $PATH_BACKUPS/backups/local -type f -newermt $FECHA_FULL ! -newermt $FECHA_FIN)
 
 # Si se especifica fichero o directorio concreto en "$2" realiza solo restauración de ese, sino se realiza restauración completa #
 if [ -z "$2" ]
@@ -311,9 +319,9 @@ function ADD_DIR_REMOTE
 {
 
 ## Añadimos descripción
-echo "# $1 $2 `date +%F`" >> /opt/sys-backup/dirs-backup-$1
+echo "# $1 $2 `date +%F`" >> $PATH_BACKUPS/dir-backups/$1
 ## Añadimos directorio a relizar copias
-echo $2 >> /opt/sys-backup/dirs-backup-$1
+echo $2 >> $PATH_BACKUPS/dir-backups/$1
 
 
 }
@@ -322,9 +330,9 @@ echo $2 >> /opt/sys-backup/dirs-backup-$1
 function ADD_EXC-DIR_REMOTE
 {
 ## Añadimos descripción
-echo "# $1 $2 `date +%F`" >> /opt/sys-backup/exc-dirs-backup-$1
+echo "# $1 $2 `date +%F`" >> $PATH_BACKUPS/dir-backups/exc-$1
 ## Añadimos directorio a excluir copias
-echo "--exclude=$2" >> /opt/sys-backup/exc-dirs-backup-$1
+echo "--exclude=$2" >> $PATH_BACKUPS/dir-backups/exc-$1
 
 }
 
@@ -336,9 +344,9 @@ function BACKUP-FULL_REMOTE
 #COMPROBAR_DIRS-BACKUP-LOCAL_VACIO
 FECHA=$(date +%F)
 ## Directorios para el backup
-DIRS_BACKUP=$(cat /opt/sys-backup/dirs-backup-$1 | grep -v "#" | tr -t "\n" " ")
+DIRS_BACKUP=$(cat $PATH_BACKUPS/dir-backups/$1 | grep -v "#" | tr -t "\n" " ")
 ## Directorios a excluir para el backup
-EXC_DIRS_BACKUP=$(cat /opt/sys-backup/exc-dirs-backup-$1 | grep -v "#" | tr -t "\n" " ")
+EXC_DIRS_BACKUP=$(cat $PATH_BACKUPS/dir-backups/exc-$1 | grep -v "#" | tr -t "\n" " ")
 ## Realizamos backup completo de $dirs-backup-$1
 if [ -z $EXC_DIRS_BACKUP ]
 then
@@ -348,8 +356,8 @@ else
 fi
 
 ## Ejecutamos backup remoto
-ssh root@$1 $COMM_REMOTE > /opt/sys-backup/backups-$1/full_$FECHA.tar.gz
-scp root@$1:/tmp/temporal.snap /opt/sys-backup/snaps-$1/full_$FECHA.snap
+ssh root@$1 $COMM_REMOTE > $PATH_BACKUPS/backups/$1/full_$FECHA.tar.gz
+scp root@$1:/tmp/temporal.snap $PATH_BACKUPS/snaps/$1/full_$FECHA.snap
 ssh root@$1 "rm /tmp/temporal.snap"
 
 ## Comprobar la planificación de backups
@@ -365,12 +373,12 @@ function BACKUP-INC_REMOTE
 #COMPROBAR_BACKUP_VACIO
 FECHA=$(date +%F)
 # Directorios para el backup
-DIRS_BACKUP=$(cat /opt/sys-backup/dirs-backup-$1 | grep -v "#" | tr -t "\n" " ")
+DIRS_BACKUP=$(cat $PATH_BACKUPS/dir-backups/$1 | grep -v "#" | tr -t "\n" " ")
 # Directorios a excluir para el backup
-EXC_DIRS_BACKUP=$(cat /opt/sys-backup/exc-dirs-backup-$1 | grep -v "#" | tr -t "\n" " ")
+EXC_DIRS_BACKUP=$(cat $PATH_BACKUPS/dir-backups/exc-$1 | grep -v "#" | tr -t "\n" " ")
 # Creamos nuevo snapsshot copiando el último creado en "snaps-local"
-ULT_snaps=$(ls -t /opt/sys-backup/snaps-$1 | head -1)
-scp /opt/sys-backup/snaps-$1/$ULT_snaps root@$1:/tmp/temporal.snap
+ULT_SNAP=$(ls -t $PATH_BACKUPS/snaps/$1 | head -1)
+scp $PATH_BACKUPS/snaps/$1/$ULT_SNAP root@$1:/tmp/temporal.snap
 # Realizamos backup incremental de $dirs-backup-local
 if [ -z $EXC_DIRS_BACKUP ]
 then
@@ -380,8 +388,8 @@ else
 fi
 
 # Ejecutamos backup remoto
-ssh root@$1 $COMM_REMOTE > /opt/sys-backup/backups-$1/inc_$FECHA.tar.gz
-scp root@$1:/tmp/temporal.snap /opt/sys-backup/snaps-$1/inc_$FECHA.snap
+ssh root@$1 $COMM_REMOTE > $PATH_BACKUPS/backups/$1/inc_$FECHA.tar.gz
+scp root@$1:/tmp/temporal.snap $PATH_BACKUPS/snaps/$1/inc_$FECHA.snap
 ssh root@$1 "rm /tmp/temporal.snap"
 
 # Comprobar la planificación de backups
@@ -408,10 +416,12 @@ BACKUP_DPKG_REMOTE $1
 
 function ADD-CRON_REMOTE
 {
-## Añadimos directrio para backups remotos de $1
-mkdir /opt/sys-backup/backups-$1
-mkdir /opt/sys-backup/snaps-$1
-touch /opt/sys-backup/exc-dirs-backup-$1
+## Añadimos directorios para backups remotos de $1
+mkdir $PATH_BACKUPS/backups/$1
+mkdir $PATH_BACKUPS/snaps/$1
+mkdir $PATH_BACKUPS/list-pkgs/$1
+touch $PATH_BACKUPS/dir-backups/$1
+touch $PATH_BACKUPS/dir-backups/exc-$1
 ## Añadimos al crontab la ejecución del backup todos los dias a las "01:01"
 echo "1 1 * * * root sys-backup remote $1 cron-backup # sys-backup $1" >> /etc/crontab
 }
@@ -435,12 +445,12 @@ SYSTEM-OS=$(ssh root@$1 "cat /etc/os-release")
 ## Creamos lista de paquetes instalados
 if [ $( echo $SYSTEM-OS | grep debian) ]
 then
-  ssh root@$1 "dpkg --get-selections" > /opt/sys-backup/dpkg/dpkg-$1_$FECHA
+  ssh root@$1 "dpkg --get-selections" > $PATH_BACKUPS/list-pkgs/$1/$FECHA
 elif [ $( echo $SYSTEM-OS | grep centos)  ]
 then
-  ssh root@$1 "rpm -qa" > /opt/sys-backup/dpkg/dpkg-$1_$FECHA
-  sed -i 's/^/install /' /opt/sys-backup/dpkg/dpkg-$1_$FECHA
-  echo run >> /opt/sys-backup/dpkg/dpkg-$1_$FECHA
+  ssh root@$1 "rpm -qa" > $PATH_BACKUPS/list-pkgs/$1/$FECHA
+  sed -i 's/^/install /' $PATH_BACKUPS/list-pkgs/$1/$FECHA
+  echo run >> $PATH_BACKUPS/list-pkgs/$1/$FECHA
 fi
 
 }
@@ -454,11 +464,11 @@ SYSTEM-OS=$(ssh root@$1 "cat /etc/os-release")
 if [ $( echo $SYSTEM-OS | grep debian) ]
 then
   ssh root@$1 "apt update && apt -y install dselect && dselect update"
-  ssh root@$1 "dpkg --set-selections" < /opt/sys-backup/dpkg/dpkg-$1_$2
+  ssh root@$1 "dpkg --set-selections" < $PATH_BACKUPS/list-pkgs/$1/$2
   ssh root@$1 "apt-get dselect-upgrade -y"
 elif [ $( echo $SYSTEM-OS | grep centos)  ]
 then
-  ssh root@$1 "yum shell" < /opt/sys-backup/dpkg/dpkg-$1_$FECHA
+  ssh root@$1 "yum shell" < $PATH_BACKUPS/list-pkgs/$1/$2
 fi
 
 }
@@ -480,7 +490,7 @@ else
 fi
 
 # Ficheros de backups para la fecha dada
-BACKUPS=$(find /opt/sys-backup/backups-$1 -type f -newermt $FECHA_FULL ! -newermt $FECHA_FIN)
+BACKUPS=$(find $PATH_BACKUPS/backups/$1 -type f -newermt $FECHA_FULL ! -newermt $FECHA_FIN)
 
 # Si se especifica fichero o directorio concreto en "$3" realiza solo restauración de ese, sino se realiza restauración completa #
 if [ -z "$3" ]
