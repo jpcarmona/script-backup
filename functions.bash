@@ -403,10 +403,10 @@ SYSTEM_OS=$(ssh root@$1 "cat /etc/os-release")
 SYSTEM_DEBIAN=$(echo $SYSTEM_OS | grep debian)
 SYSTEM_CENTOS=$(echo $SYSTEM_OS | grep centos)
 ## Creamos lista de paquetes instalados
-if [ -n $SYSTEM_DEBIAN ]
+if [ -n "$SYSTEM_DEBIAN" ]
 then
   ssh root@$1 "dpkg --get-selections" > $PATH_BACKUPS/list-pkgs/$1/$FECHA
-elif [ -n $SYSTEM_CENTOS ]
+elif [ -n "$SYSTEM_CENTOS" ]
 then
   ssh root@$1 "rpm -qa" > $PATH_BACKUPS/list-pkgs/$1/$FECHA
   sed -i 's/^/install /' $PATH_BACKUPS/list-pkgs/$1/$FECHA
@@ -423,12 +423,12 @@ SYSTEM_OS=$(ssh root@$1 "cat /etc/os-release")
 SYSTEM_DEBIAN=$(echo $SYSTEM_OS | grep debian)
 SYSTEM_CENTOS=$(echo $SYSTEM_OS | grep centos)
 
-if [ -n $SYSTEM_DEBIAN ]
+if [ -n "$SYSTEM_DEBIAN" ]
 then
   ssh root@$1 "apt update && apt -y install dselect && dselect update"
   ssh root@$1 "dpkg --set-selections" < $PATH_BACKUPS/list-pkgs/$1/$2
   ssh root@$1 "apt-get dselect-upgrade -y"
-elif [ -n $SYSTEM_CENTOS ]
+elif [ -n "$SYSTEM_CENTOS" ]
 then
   ssh root@$1 "yum shell" < $PATH_BACKUPS/list-pkgs/$1/$2
 fi
