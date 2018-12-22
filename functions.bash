@@ -70,13 +70,8 @@ PATH_BACKUPS=$PATH_BACKUPS
 ## Creamos y copiamos - ficheros y directorios necesarios
 function INSTALL_SYS-BACKUP
 {
-# Directorios scripts
-mkdir -p /opt/sys-backup
 # Directorios Backups
 mkdir -p $PATH_BACKUPS/backups $PATH_BACKUPS/snaps $PATH_BACKUPS/list-pkgs $PATH_BACKUPS/dir-backups
-# Copiamos scripts
-cp $DIR_BASE/sys-backup.bash /opt/sys-backup/
-cp $DIR_BASE/functions.bash /opt/sys-backup/
 # Creamos enlace para ejecutar script en local
 ln -s /opt/sys-backup/sys-backup.bash /usr/local/sbin/sys-backup
 # Damos permiso para ejecución de script
