@@ -457,11 +457,11 @@ fi
 BACKUPS=$(find $PATH_BACKUPS/backups/$1 -type f -newermt $FECHA_FULL ! -newermt $FECHA_FIN)
 
 # Si se especifica fichero o directorio concreto en "$3" realiza solo restauración de ese, sino se realiza restauración completa #
+mkdir /tmp/temporal-backups
 if [ -z "$3" ]
 then
   ## Restaura los paquetes instalados en HOST($1) con fecha "$2"
-  RESTORE_PKG_REMOTE $1 $2
-  mkdir /tmp/temporal-backups
+  RESTORE_PKG_REMOTE $1 $2  
   for FICHERO in $BACKUPS
   do
     tar -xzpf $FICHERO -C /tmp/temporal-backups/
